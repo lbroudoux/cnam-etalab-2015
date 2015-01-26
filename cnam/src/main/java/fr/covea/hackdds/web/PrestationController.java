@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -84,6 +85,33 @@ public class PrestationController {
 
       Aggregation agg = newAggregation(
             match(Criteria.where("naturePrestation").not().regex("^19", "i")),
+            group("annee")
+                  .sum("montantRemboursement").as("remboursement")
+                  .sum("montantPaiement").as("paiement"),
+            project("annee")
+                  .and("paiement").minus("remboursement").as("montant").and("annee").previousOperation()
+      );
+      AggregationResults<SommeAnnuel> results = mongoTemplate.aggregate(agg,
+            "prestation", SommeAnnuel.class);
+
+      return results.getMappedResults();
+   }
+
+   @RequestMapping("/nonRemboursement/montantParAnneePourPrestations")
+   public List<SommeAnnuel> montantNonRemboursementPourPrestations(
+         @RequestParam(value="natures", required=true) List<String> natures) {
+
+      Criteria c = Criteria.where("naturePrestation");
+      for (int i=0; i<natures.size(); i++){
+         String nature = natures.get(i);
+         if (i == 0) {
+            c.regex("^" + nature, "i");
+         } else {
+            c.orOperator(c.regex("^" + nature, "i"));
+         }
+      }
+      Aggregation agg = newAggregation(
+            match(c.andOperator(Criteria.where("naturePrestation").not().regex("^19", "i"))),
             group("annee")
                   .sum("montantRemboursement").as("remboursement")
                   .sum("montantPaiement").as("paiement"),
