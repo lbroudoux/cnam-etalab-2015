@@ -79,6 +79,23 @@ public class PrestationController {
       return results.getMappedResults();
    }
 
+   @RequestMapping("/nonRemboursement/montantParAnnee")
+   public List<SommeAnnuel> montantNonRemboursement() {
+
+      Aggregation agg = newAggregation(
+            match(Criteria.where("naturePrestation").not().regex("^19", "i")),
+            group("annee")
+                  .sum("montantRemboursement").as("remboursement")
+                  .sum("montantPaiement").as("paiement"),
+            project("annee")
+                  .and("paiement").minus("remboursement").as("montant").and("annee").previousOperation()
+      );
+      AggregationResults<SommeAnnuel> results = mongoTemplate.aggregate(agg,
+            "prestation", SommeAnnuel.class);
+
+      return results.getMappedResults();
+   }
+
    // Inner beans
    class RatioAnnuel {
       Double ratio;
