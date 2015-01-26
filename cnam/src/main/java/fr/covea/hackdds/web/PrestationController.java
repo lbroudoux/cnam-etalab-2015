@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,22 +34,75 @@ public class PrestationController {
       return repository.findAll();
    }
 
-   @RequestMapping("/remboursement/montantParAnnee")
-   public List<Remboursement> montantDepense(){
+   @RequestMapping("/depense/montantParAnnee")
+   public List<SommeAnnuel> montantDepense(){
 
       Aggregation agg = newAggregation(
+         match(Criteria.where("naturePrestation").not().regex("^19", "i")),
+         group("annee").sum("montantPaiement").as("montant"),
+         project("montant").and("annee").previousOperation()
+      );
+      AggregationResults<SommeAnnuel> results = mongoTemplate.aggregate(agg,
+            "prestation", SommeAnnuel.class);
+
+      return results.getMappedResults();
+   }
+
+   @RequestMapping("/remboursement/montantParAnnee")
+   public List<SommeAnnuel> montantRemboursement(){
+
+      Aggregation agg = newAggregation(
+         match(Criteria.where("naturePrestation").not().regex("^19", "i")),
          group("annee").sum("montantRemboursement").as("montant"),
          project("montant").and("annee").previousOperation()
       );
-      AggregationResults<Remboursement> results = mongoTemplate.aggregate(agg,
-            "prestation", Remboursement.class);
+      AggregationResults<SommeAnnuel> results = mongoTemplate.aggregate(agg,
+            "prestation", SommeAnnuel.class);
+
+      return results.getMappedResults();
+   }
+
+   @RequestMapping("/ratio/remboursementPaiementParAnnee")
+   public List<RatioAnnuel> ratioRemboursementPaiement() {
+
+      Aggregation agg = newAggregation(
+            match(Criteria.where("naturePrestation").not().regex("^19", "i")),
+            group("annee")
+                  .sum("montantRemboursement").as("remboursement")
+                  .sum("montantPaiement").as("paiement"),
+            project("annee")
+                  .and("remboursement").divide("paiement").as("ratio").and("annee").previousOperation()
+      );
+      AggregationResults<RatioAnnuel> results = mongoTemplate.aggregate(agg,
+            "prestation", RatioAnnuel.class);
 
       return results.getMappedResults();
    }
 
    // Inner beans
-   class Remboursement {
+   class RatioAnnuel {
+      Double ratio;
+      String annee;
+
+      public Double getRatio() {
+         return ratio;
+      }
+      public void setRatio(Double ratio) {
+         this.ratio = ratio;
+      }
+
+      public String getAnnee() {
+         return annee;
+      }
+      public void setAnnee(String annee) {
+         this.annee = annee;
+      }
+   }
+
+   class SommeAnnuel {
       Double montant;
+      Double montantTaux100;
+      Double montantTauxAutres;
       String annee;
 
       public Double getMontant() {
@@ -57,6 +111,21 @@ public class PrestationController {
       public void setMontant(Double montant) {
          this.montant = montant;
       }
+
+      public Double getMontantTaux100() {
+         return montantTaux100;
+      }
+      public void setMontantTaux100(Double montantTaux100) {
+         this.montantTaux100 = montantTaux100;
+      }
+
+      public Double getMontantTauxAutres() {
+         return montantTauxAutres;
+      }
+      public void setMontantTauxAutres(Double montantTauxAutres) {
+         this.montantTauxAutres = montantTauxAutres;
+      }
+
       public String getAnnee() {
          return annee;
       }
