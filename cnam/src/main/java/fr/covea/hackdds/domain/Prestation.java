@@ -1,13 +1,16 @@
 package fr.covea.hackdds.domain;
 
 import org.springframework.data.annotation.Id;
+
+import java.math.BigInteger;
+
 /**
  * @author laurent
  */
 public class Prestation {
 
    @Id
-   private long id;
+   private BigInteger id;
    private String annee;
    private String mois;
    private String naturePrestation;
@@ -31,7 +34,7 @@ public class Prestation {
    private double nombreActes;
    private double quantiteActes;
 
-   public long getId() {
+   public BigInteger getId() {
       return id;
    }
 
