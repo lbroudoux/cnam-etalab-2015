@@ -24,12 +24,28 @@ public class Application implements CommandLineRunner {
 
    @Override
    public void run(String... args) throws Exception {
-      repository.deleteAll();
+      //repository.deleteAll();
 
       Prestation prestation = new Prestation();
       prestation.setAnnee("2010");
       prestation.setMois("1");
       prestation.setAgeBeneficiaire(36);
+      prestation.setSexeBeneficiaire("H");
+      prestation.setZoneBeneficiaire("1");
+      prestation.setMontantRemboursement(23.5);
+      prestation.setMontantPaiement(26);
+      prestation.setNaturePrestation("1901");
+      repository.save(prestation);
+
+      prestation = new Prestation();
+      prestation.setAnnee("2010");
+      prestation.setMois("2");
+      prestation.setAgeBeneficiaire(36);
+      prestation.setSexeBeneficiaire("F");
+      prestation.setZoneBeneficiaire("1");
+      prestation.setMontantRemboursement(16.5);
+      prestation.setMontantPaiement(24);
+      prestation.setNaturePrestation("0119");
       repository.save(prestation);
    }
 }
