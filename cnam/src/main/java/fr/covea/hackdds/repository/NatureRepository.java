@@ -7,4 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @author laurent
  */
 public interface NatureRepository extends MongoRepository<Nature, String> {
+
 }
