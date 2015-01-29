@@ -46,6 +46,10 @@ La base MongoDB doit se nommer `damir`.
 
 L'import des données doit être réalisé de la façon suivante :
 
+```sh
+$ TODO
+```
+
 #### Partie Spring
 
 Démarrer le serveur en se positionnant à la racine de `/cnam` et en exécutant :
