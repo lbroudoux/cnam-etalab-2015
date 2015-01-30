@@ -1,1 +1,20 @@
-<p>This is the about view.</p>
+<select ng-model="choixGraph">
+  <option value="remboursement">Remboursement : Montant Par Annee</option>
+  <option value="depense">Depense : Montant par Annee</option>
+  <option value="ratio">Remboursement Paiement Par Annee</option>
+</select>
+
+
+<canvas id="bar" class="chart chart-bar" data="remboursementMontantParAnnee"
+  labels="labels"></canvas> 
+
+<!-- 
+<canvas ng-show="choixGraph=='depense'" id="bar" class="chart chart-bar" data="depenseMontantParAnnee"
+  labels="labels"></canvas>
+  
+<canvas ng-show="choixGraph=='ratio'" id="bar" class="chart chart-bar" data="ratio"
+  labels="labels"></canvas>
+ -->
+
+
+ 

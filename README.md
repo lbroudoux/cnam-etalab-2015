@@ -62,7 +62,7 @@ Les endpoints mis à disposition sont les suivants :
 * `http://localhost:8080/remboursement/montantParAnnee`
 * `http://localhost:8080/nonRemboursement/montantParAnnee`
 * `http://localhost:8080/ratio/remboursementPaiementParAnnee`
-* `http://localhost:8080//nonRemboursement/montantParAnneePourPrestations?natures=01&natures=04`
+* `http://localhost:8080/nonRemboursement/montantParAnneePourPrestations?natures=01&natures=04`
 
 #### Partie AngularJS
 
